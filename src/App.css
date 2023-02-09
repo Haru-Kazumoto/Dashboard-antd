@@ -1,8 +1,4 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
@@ -13,21 +9,6 @@
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -35,4 +16,86 @@
   to {
     transform: rotate(360deg);
   }
+} */
+
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+
+*{
+  margin: 0;
+  padding: 0;
+  font-family: 'Ubuntu', sans-serif;
 }
+
+/* ----HEADER---- */
+
+.header{
+  padding: 0;
+  background-color: rgb(255, 0, 0)
+}
+
+.avatar-header{
+  position: relative;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  margin-left: auto;
+  display: block;
+  margin-top: 6px;
+  right: -20px;
+}
+
+.ant-drawer-header{
+  text-align: center;
+}
+
+.avatar-header-profile{
+  display: flex;
+  margin: auto;
+  margin-bottom: 20px;
+}
+
+.sub-profile{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.logout-button{
+  padding: 20px 10px;
+}
+
+.text-logout{
+  display: flex;
+  margin-left: 10px;
+  align-items: center;
+}
+
+/* ----CONTENT---- */
+
+.content{
+  padding: 10px 5px 0;
+}
+
+.content-container{
+  margin: 24px 16px 24px;
+  height: 100vh;
+  background-color: rgb(235, 235, 235);
+  -webkit-box-shadow: 1px 2px 11px -1px rgba(0,0,0,0.75);
+  -moz-box-shadow: 1px 2px 11px -1px rgba(0,0,0,0.75);
+  box-shadow: 1px 2px 11px -1px rgba(0,0,0,0.75);
+}
+
+.layout-container{
+  height: 100vh;
+}
+
+/* ----SIDE---- */
+
+.logo {  
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
