@@ -8,8 +8,8 @@ const RoutesURL = () => {
   return (
     <Routes>
       <Route path='/' element={<DashboardData />} />
-      <Route path='/user-data' element={<EmployeeData />} />
-      <Route path='/employee-data' element={<UserData />} />
+      <Route path='/user-data' element={<UserData />} />
+      <Route path='/employee-data' element={<EmployeeData />} />
     </Routes>
   )
 }
