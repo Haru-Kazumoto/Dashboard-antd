@@ -167,7 +167,7 @@ const EmployeeData = () => {
 
   return (
     <div>
-      <h1 style={{fontSize: '1cm', marginLeft: '25px', marginBottom: '5px'}}>Employee Data</h1>
+      {/* <h1 style={{fontSize: '1cm', marginLeft: '25px', marginBottom: '5px'}}>Employee Data</h1> */}
       <Space direction='horizontal'>
         <DashboardCard 
           icon={<TiIcons.TiFlowSwitch size={30}/>}

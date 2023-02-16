@@ -1,9 +1,10 @@
 import React from 'react'
-import { Space,Table, Tag, Avatar} from 'antd';
+import { Space,Table, Tag, Avatar, Button, Popconfirm, message} from 'antd';
 import DashboardCard from '../components/DashboardCard';
 import * as HiIcons from 'react-icons/hi'
-import * as MdIcons from 'react-icons/md';
 import * as GrIcons from 'react-icons/gr';
+import * as AiIcons from'react-icons/ai';
+import * as SiIcons from 'react-icons/si';
 
 const data = [
   {
@@ -63,9 +64,6 @@ const data = [
 ];
 
 const DashboardData = () => {
-
-  const[isOpen, setIsOpen] = React.useState(false);
-  const toggle = () => setIsOpen(!isOpen);
 
   const columns = [
     {
@@ -136,9 +134,31 @@ const DashboardData = () => {
       align: 'center'
     },
   ];
+
+  const[isOpen, setIsOpen] = React.useState(false);
+  const[isLoading, setIsLoading] = React.useState(false);
+
+  const showModal = () => {
+    setIsOpen(true)
+  }
+
+  const handleOk = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsLoading(false);
+      message.success("Export CSV Success")
+      console.log("Export CSV Success")
+    }, 2000);
+  }
+
+  const handleCancel = () => {
+    setIsOpen(false);
+  }
+
   return (
     <div>
-      <h1 style={{fontSize: '1cm', marginLeft: '25px', marginBottom: '10px'}}>Dashboard</h1>
+      {/* <h1 style={{fontSize: '1cm', marginLeft: '25px', marginBottom: '10px'}}>Dashboard</h1> */}
       <Space direction='horizontal'>
         <DashboardCard 
           icon={<GrIcons.GrUserSettings size={35} />} 
@@ -146,22 +166,61 @@ const DashboardData = () => {
           value={27}
         />
         <DashboardCard 
-          icon={<HiIcons.HiOutlineUserGroup size={35}/>} 
+          icon={<HiIcons.HiOutlineUserGroup size={35} />} 
           title={"Employee"} 
           value={30}
         />
         <DashboardCard
-          icon={<MdIcons.MdOutlineAttachMoney size={35}/>} 
+          icon={<AiIcons.AiOutlineArrowUp size={35} />} 
           title={"Profit"} 
-          value={600}
+          valueStyle={{
+            color: '#3f8600'
+          }}
+          precision={2}
+          suffix="%"
+          value={10.00}
         />
-        <DashboardCard 
-          icon={<MdIcons.MdMoneyOffCsred size={35}/>} 
+        <DashboardCard
+          icon={<AiIcons.AiOutlineArrowDown size={35} />} 
           title={"Expense"} 
-          value={150}
+          valueStyle={{
+            color: '#cf1322'
+          }}
+          precision={2}
+          suffix="%"
+          value={5.00}
         />
       </Space>
-      
+  
+      <Space direction='horizontal'>
+        <Popconfirm
+          open={isOpen}
+          title="Export CSV File"
+          description="Are you sure want to export the CSV?"
+          onConfirm={handleOk}
+          onCancel={handleCancel}
+          okButtonProps={{
+            loading: isLoading
+          }}
+        >
+          <Button 
+            onClick={showModal}
+            type="primary" 
+            icon={<SiIcons.SiMicrosoftexcel
+              color='white'
+              style={
+                {
+                  marginRight: 10,
+                  alignItems: 'center',
+                }
+            }/>} 
+            size={'middle'} 
+            style={{backgroundColor: '#2f9b08'}}>
+              Export CSV
+          </Button>
+        </Popconfirm>
+      </Space>
+
       <Table 
         size='small'
         className='table-content'

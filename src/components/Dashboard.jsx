@@ -1,4 +1,4 @@
-import { Layout, Menu, Avatar, Tooltip, Drawer, Button, Space, Popconfirm, } from 'antd';
+import { Layout, Menu, Avatar, Tooltip, Drawer, Button, Space, Popconfirm, message, } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Profile from './Profile-card/Profile';
@@ -13,7 +13,10 @@ const { Header, Content, Sider } = Layout;
 const Dashboard = () => {
     const confirm = () =>
         new Promise((resolve) => {
-        setTimeout(() => resolve(null), 3000);
+        setTimeout(() => {
+            resolve(null)
+            message.success('Logout success.')
+        }, 3000);
     }); 
     const [isOpen, setIsOpen] = React.useState(false);
     const toggle = () => setIsOpen(!isOpen);
@@ -22,7 +25,7 @@ const Dashboard = () => {
             <Layout className='layout-container'>
                 <Sider breakpoint="lg" collapsedWidth="0">
                     <div className="logo" style={{color: 'white', textAlign: 'center'}}>
-                        Logo
+                        <img src="./logo192.png" alt="logo" />
                     </div>
                         <Menu theme="dark" mode="inline" 
                         defaultSelectedKeys={['4']}
@@ -33,7 +36,7 @@ const Dashboard = () => {
                             return {
                                 key: data.key,
                                 label: data.label,
-                                icon: data.icon,
+                                icon: data.icon
                             };
                         })}
                         />

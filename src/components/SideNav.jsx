@@ -1,10 +1,10 @@
-import * as ImIcons from 'react-icons/im';
 import * as FaIcons from 'react-icons/fa';
+import * as RxIcons from 'react-icons/rx';
 
 export const SideNav = [
     {
-        label: "Home",
-        icon: <ImIcons.ImHome />,
+        label: "Dashboard",
+        icon: <RxIcons.RxDashboard />,
         key: '/'
     },
     {
