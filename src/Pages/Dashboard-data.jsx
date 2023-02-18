@@ -1,69 +1,29 @@
 import React from 'react'
-import { Space,Table, Tag, Avatar, Button, Popconfirm, message} from 'antd';
+import { Space,Table, Tag, Avatar, Button, Popconfirm, message, Input} from 'antd';
 import DashboardCard from '../components/DashboardCard';
 import * as HiIcons from 'react-icons/hi'
 import * as GrIcons from 'react-icons/gr';
 import * as AiIcons from'react-icons/ai';
 import * as SiIcons from 'react-icons/si';
-
-const data = [
-  {
-    key: '1',
-    profile: './profile_pict(3).jpg',
-    name: 'Makoto Miura',
-    gender: ['Male'],
-    email: 'MakotoMiura@gmail.com',
-    address: 'New York No. 1 Lake Park',
-    tags: ['frontend'],
-  },
-  {
-    key: '2',
-    name: 'Sakura Ai',
-    profile: './profile_pict(1).jpg',
-    gender: ['female'],
-    email: 'SakuraAi@gmail.com',
-    address: 'London No. 1 Lake Park',
-    tags: ['ui/ux'],
-  },
-  {
-    key: '3',
-    name: 'Akiha Yumeno',
-    profile: './profile_pict(2).jpg',
-    gender: ['Female'],
-    email: 'AkihaYumero@gmail.com',
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['tester'],
-  },
-  {
-    key: '4',
-    name: 'Asami Yuru',
-    profile: './profile_pict(4).jpg',
-    gender: ['Male'],
-    email: 'AsamiYuru@gmail.com',
-    address: 'London No. 1 Lake Park',
-    tags: ['frontend'],
-  },
-  {
-    key: '5',
-    name: 'Kihako Cho',
-    profile: './profile_pict(5).jpg',
-    gender: ['Male'],
-    email: 'KihakoCho@gmail.com',
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['backend'],
-  },
-  {
-    key: '6',
-    name: 'Ayumi Makoto',
-    profile: './profile_pict(7).jpg',
-    gender: ['female'],
-    email: 'AyumiMakoto@gmail.com',
-    address: 'London No. 1 Lake Park',
-    tags: ['ui/ux'],
-  }
-];
+import axios from 'axios';
 
 const DashboardData = () => {
+
+  const[data, setData] = React.useState([]);
+
+  const fetchData = async () => {
+    try{
+      const response = await axios.get("http://localhost:3000/Data");
+      setData(response.data);  
+    } catch(error){
+      message.error("Failed to get data, please check the server side.");
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
 
   const columns = [
     {
@@ -84,7 +44,26 @@ const DashboardData = () => {
       key: 'name',
       render: (text) => <span>{text}</span>,
       width: 250,
-      align: 'center'
+      align: 'center',
+      filterDropdown: ({setSelectedKeys, selectedKeys, confirm}) => {
+        return <Input 
+                  autoFocus 
+                  placeholder='Search Name...' 
+                  value={selectedKeys[0]}
+                  onChange={(e) => {
+                    setSelectedKeys(e.target.value ? [e.target.value] : []);
+                    confirm({closeDropdown: false});
+                  }}
+                  onPressEnter={() => {confirm()}}
+                  onBlur={() => {confirm()}}
+                  />
+      },
+      filterIcon: () => {
+        return <AiIcons.AiOutlineSearch size={15}/>
+      },
+      onFilter: (value, record) => {
+        return record.name.toLowerCase().includes(value.toLowerCase());
+      }
     },
     {
       title: 'Gender',
@@ -125,7 +104,7 @@ const DashboardData = () => {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      align: 'center',
+      align: 'center'
     },
     {
       title: 'Address',
@@ -158,7 +137,6 @@ const DashboardData = () => {
 
   return (
     <div>
-      {/* <h1 style={{fontSize: '1cm', marginLeft: '25px', marginBottom: '10px'}}>Dashboard</h1> */}
       <Space direction='horizontal'>
         <DashboardCard 
           icon={<GrIcons.GrUserSettings size={35} />} 
@@ -214,7 +192,7 @@ const DashboardData = () => {
                   alignItems: 'center',
                 }
             }/>} 
-            size={'middle'} 
+            size={'large'} 
             style={{backgroundColor: '#2f9b08'}}>
               Export CSV
           </Button>
@@ -225,7 +203,17 @@ const DashboardData = () => {
         size='small'
         className='table-content'
         columns={columns} 
-        dataSource={data} 
+        dataSource={data.map((item) => {
+          return {
+            id: item.id,
+            profile: item.profile,
+            name: item.name,
+            gender: item.gender,
+            email: item.email,
+            address: item.address,
+            tags: item.tags
+          }
+        })} 
         pagination={{
           pageSize: 10,
           position: ['bottomCenter']

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Space, Statistic, Card, Col, Row } from 'antd'
+import { Statistic, Card, Col, Row } from 'antd'
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 
 const UserData = () => {
@@ -36,17 +36,6 @@ const UserData = () => {
         </Col>
       </Row>
     </div>
-  )
-}
-
-function DashboardCard({title, value, icon}) {
-  return (
-    <Card className='card-dashboard'>
-      <Space direction='horizontal'>
-        {icon}
-        <Statistic title={title} value={value} />
-      </Space>
-    </Card>
   )
 }
 

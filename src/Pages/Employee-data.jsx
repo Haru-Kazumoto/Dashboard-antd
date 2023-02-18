@@ -1,74 +1,53 @@
 import React from 'react'
-import { Space } from 'antd'
+import { Space, message } from 'antd'
 import DashboardCard from '../components/DashboardCard'
 import {Avatar, Tag, Table, Tooltip, Button, Modal} from 'antd';
+import { ExclamationCircleFilled } from '@ant-design/icons';
 import * as TiIcons from 'react-icons/ti';
 import * as TbIcons from 'react-icons/tb';
 import * as MdIcons from 'react-icons/md';
 import * as GrIcons from 'react-icons/gr';
 import * as AiIcons from 'react-icons/ai';
+import * as HiIcons from 'react-icons/hi';
+import axios from 'axios';
 
-const data = [
-  {
-    key: '1',
-    profile: './profile_pict(3).jpg',
-    name: 'Makoto Miura',
-    gender: ['Male'],
-    email: 'MakotoMiura@gmail.com',
-    address: 'New York No. 1 Lake Park',
-    tags: ['frontend'],
-  },
-  {
-    key: '2',
-    name: 'Sakura Ai',
-    profile: './profile_pict(1).jpg',
-    gender: ['female'],
-    email: 'SakuraAi@gmail.com',
-    address: 'London No. 1 Lake Park',
-    tags: ['ui/ux'],
-  },
-  {
-    key: '3',
-    name: 'Akiha Yumeno',
-    profile: './profile_pict(2).jpg',
-    gender: ['Female'],
-    email: 'AkihaYumero@gmail.com',
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['tester'],
-  },
-  {
-    key: '4',
-    name: 'Asami Yuru',
-    profile: './profile_pict(4).jpg',
-    gender: ['Male'],
-    email: 'AsamiYuru@gmail.com',
-    address: 'London No. 1 Lake Park',
-    tags: ['frontend'],
-  },
-  {
-    key: '5',
-    name: 'Kihako Cho',
-    profile: './profile_pict(5).jpg',
-    gender: ['Male'],
-    email: 'KihakoCho@gmail.com',
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['backend'],
-  },
-  {
-    key: '6',
-    name: 'Ayumi Makoto',
-    profile: './profile_pict(7).jpg',
-    gender: ['female'],
-    email: 'AyumiMakoto@gmail.com',
-    address: 'London No. 1 Lake Park',
-    tags: ['ui/ux'],
-  }
-];
+const { confirm } = Modal;
 
 const EmployeeData = () => {
 
-  const [isClick, setIsClick] = React.useState(false);
-  const toggle = () => {setIsClick(!isClick)};
+  const API_BASE_URL = "http://localhost:3000";
+  const[data, setData] = React.useState([]);
+  const[record, setRecord] = React.useState(null);
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
+  const showConfirm = () => {
+    confirm({
+      title: 'Do you Want to delete these employee?',
+      icon: <ExclamationCircleFilled />,
+      content: 'Data will be deleted and cannot be restored',
+      onOk() {
+        message.success("Data has deleted");
+        console.log('OK');
+      },
+      onCancel() {
+        console.log('Cancel');
+      }
+    });
+  };
+
+  const handleDelete = async (id) => {
+    try{
+      await axios.delete(`${API_BASE_URL}/Data/${id}`);
+      message.success("Record has deleted.");
+      fetchData();
+    } catch(error) {
+      console.error(error);
+      message.error("Record failed to be deleted");
+    }
+  }
 
   const columns = [
     {
@@ -145,29 +124,39 @@ const EmployeeData = () => {
       fixed: 'right',
       width: 150,
       align: 'center',
-      render: (_) => (
-        <div>
+      render: (_, record) => (
+        <>
           <Tooltip placement="topRight" title="Delete">
-            <Button type="primary" danger className='del-button-table-dashboard'>
+            <Button 
+              type="primary" 
+              danger 
+              className='del-button-table-dashboard'
+              onClick={() => handleDelete(record.id)}
+            >
               <AiIcons.AiOutlineDelete />
             </Button>
-            {/* <Modal title='Delete' open={toggle} footer={null}>
-              <p>content</p>
-            </Modal> */}
           </Tooltip>
           <Tooltip placement="topLeft" title="Update">
             <Button type="primary">
               <AiIcons.AiOutlineEdit />
             </Button>
           </Tooltip>
-        </div>
+        </>
       ),
     }
   ];
 
+  const fetchData = async () => {
+    try{
+      const response = await axios.get(`${API_BASE_URL}/Data`);
+      setData(response.data);
+    } catch(error){
+      console.log(error);
+    }
+  };
+
   return (
     <div>
-      {/* <h1 style={{fontSize: '1cm', marginLeft: '25px', marginBottom: '5px'}}>Employee Data</h1> */}
       <Space direction='horizontal'>
         <DashboardCard 
           icon={<TiIcons.TiFlowSwitch size={30}/>}
@@ -190,12 +179,37 @@ const EmployeeData = () => {
           value={10}
         />
       </Space>
-
+      <Space wrap direction='horizontal'>
+      <Button 
+            type="primary" 
+            icon={<HiIcons.HiPlus
+              color='white'
+              style={
+                {
+                  marginRight: 10,
+                  alignItems: 'center',
+                }
+            }/>} 
+            size={'large'} 
+            style={{backgroundColor: 'blue'}}>
+              Add Employee
+          </Button>
+      </Space>
       <Table 
         size='small'
         className='table-content'
         columns={columns} 
-        dataSource={data} 
+        dataSource={data.map((item) => {
+          return {
+            id: item.id,
+            profile: item.profile,
+            name: item.name,
+            gender: item.gender,
+            email: item.email,
+            address: item.address,
+            tags: item.tags
+          }
+        })} 
         bordered
         pagination={{
           pageSize: 10,

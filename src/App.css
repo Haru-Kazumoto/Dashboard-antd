@@ -100,19 +100,11 @@
   border-radius: 20px;
   border-color: rgba(0, 0, 0, 0.299);
   border-style: solid;
-  /* background-color: rgb(163, 43, 43); */
 }
 
 .del-button-table-dashboard{
   margin-right: 5px;
 }
-
-/* STATISTIC CONTENT */
-
-.pie-chart{
-  width: 650px;
-}
-
 
 /* ----SIDE---- */
 
