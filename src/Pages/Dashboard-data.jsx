@@ -1,5 +1,5 @@
 import React from 'react'
-import { Space,Table, Tag, Avatar, Button, Popconfirm, message, Input} from 'antd';
+import { Space,Table, Tag, Button, Popconfirm, message, Input} from 'antd';
 import DashboardCard from '../components/DashboardCard';
 import * as HiIcons from 'react-icons/hi'
 import * as GrIcons from 'react-icons/gr';
@@ -9,11 +9,20 @@ import axios from 'axios';
 
 const DashboardData = () => {
 
+  const API_BASE_URL = "http://localhost:3000";
+
   const[data, setData] = React.useState([]);
+  const[isOpen, setIsOpen] = React.useState(false);
+  const[isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     try{
-      const response = await axios.get("http://localhost:3000/Data");
+      const response = await axios.get(`${API_BASE_URL}/data`);
+      setIsLoading(false);
       setData(response.data);  
     } catch(error){
       message.error("Failed to get data, please check the server side.");
@@ -21,22 +30,13 @@ const DashboardData = () => {
     }
   };
 
-  React.useEffect(() => {
-    fetchData();
-  }, []);
-
   const columns = [
     {
-      title: 'Profile',
-      dataIndex: 'profile',
-      key: 'profile',
-      width: 100,
-      align: 'center',
-      render: (profile) => {
-        return (
-          <Avatar src={profile} size={40} />
-        )
-      }
+      title: 'Id',
+      dataIndex: 'id',
+      width: 50,
+      key: 'id',
+      align: 'center'
     },
     {
       title: 'Name',
@@ -85,12 +85,12 @@ const DashboardData = () => {
     },
     {
       title: 'Job role',
-      key: 'job_role',
-      dataIndex: 'job_role',
+      key: 'role',
+      dataIndex: 'role',
       align: 'center',
-      render: (_, { tags }) => (
+      render: (_, { role }) => (
         <>
-          {tags.map((tag) => {
+          {role.map((tag) => {
             return (
               <Tag color={'green'} key={tag}>
                 {tag.toUpperCase()}
@@ -113,9 +113,6 @@ const DashboardData = () => {
       align: 'center'
     },
   ];
-
-  const[isOpen, setIsOpen] = React.useState(false);
-  const[isLoading, setIsLoading] = React.useState(false);
 
   const showModal = () => {
     setIsOpen(true)
@@ -206,14 +203,14 @@ const DashboardData = () => {
         dataSource={data.map((item) => {
           return {
             id: item.id,
-            profile: item.profile,
             name: item.name,
             gender: item.gender,
+            role: item.role,
             email: item.email,
-            address: item.address,
-            tags: item.tags
+            address: item.address
           }
         })} 
+        loading={isLoading}
         pagination={{
           pageSize: 10,
           position: ['bottomCenter']

@@ -1,8 +1,8 @@
 import React from 'react'
-import { Space, message } from 'antd'
 import DashboardCard from '../components/DashboardCard'
-import {Avatar, Tag, Table, Tooltip, Button, Modal} from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import {Tag, Table, Tooltip, Button, Space, message, Modal, Form, notification, Input} from 'antd';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import * as TiIcons from 'react-icons/ti';
 import * as TbIcons from 'react-icons/tb';
 import * as MdIcons from 'react-icons/md';
@@ -11,37 +11,47 @@ import * as AiIcons from 'react-icons/ai';
 import * as HiIcons from 'react-icons/hi';
 import axios from 'axios';
 
-const { confirm } = Modal;
-
 const EmployeeData = () => {
 
   const API_BASE_URL = "http://localhost:3000";
-  const[data, setData] = React.useState([]);
-  const[record, setRecord] = React.useState(null);
-
+  const { TextArea } = Input;
   React.useEffect(() => {
     fetchData();
   }, []);
 
-  const showConfirm = () => {
-    confirm({
-      title: 'Do you Want to delete these employee?',
-      icon: <ExclamationCircleFilled />,
-      content: 'Data will be deleted and cannot be restored',
-      onOk() {
-        message.success("Data has deleted");
-        console.log('OK');
-      },
-      onCancel() {
-        console.log('Cancel');
-      }
-    });
+  const[data, setData] = React.useState([]);
+  const[record, setRecord] = React.useState(null);
+  const[openModal, setOpenModal] = React.useState(false);
+  const[visible, setVisible] = React.useState(false);
+  const[isLoading, setIsLoading] = React.useState(true);
+  const[form] = Form.useForm();
+
+  const showModal = (record) => {
+    setRecord(record);
+    setOpenModal(true);
+  }
+
+  const closeModal = () => {
+    setOpenModal(false);
+  }
+
+  const fetchData = async () => {
+    try{
+      const response = await axios.get(`${API_BASE_URL}/data`)
+      setIsLoading(false);
+      setData(response.data);
+    } catch(error){
+      console.log(error);
+    }
   };
 
-  const handleDelete = async (id) => {
+  // HANDLE DATA CRUD //
+
+  const handleDelete = async () => {
     try{
-      await axios.delete(`${API_BASE_URL}/Data/${id}`);
+      await axios.delete(`${API_BASE_URL}/data/${record.id}`);
       message.success("Record has deleted.");
+      closeModal();
       fetchData();
     } catch(error) {
       console.error(error);
@@ -49,19 +59,40 @@ const EmployeeData = () => {
     }
   }
 
+  const handleSubmit = (values) => {
+    axios.post(`${API_BASE_URL}/data`, values)
+      .then((response) => {
+        console.log(response);
+        form.resetFields();
+        setVisible(false);
+        toast.success("New record has been added!", {
+          position: "top-center",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+        notification.error({
+          message: "error",
+          description: "An error occurred while push data, check the server side."
+        });
+      });
+  }
+
   const columns = [
     {
-      title: 'Profile',
-      dataIndex: 'profile',
+      title: 'Id',
+      dataIndex: 'id',
       fixed: 'left',
-      key: 'profile',
-      width: 100,
-      align: 'center',
-      render: (profile) => {
-        return (
-          <Avatar src={profile} size={40} />
-        )
-      }
+      width: 50,
+      key: 'id',
+      align: 'center'
     },
     {
       title: 'Name',
@@ -76,35 +107,27 @@ const EmployeeData = () => {
       dataIndex: 'gender',
       key: 'gender',
       align: 'center',
-      render: (_, { gender }) => (
-        <>
-          {gender.map((gender) => {
-            let color = gender === 'Male' ? 'geekblue' : 'magenta';
-            return (
-              <Tag color={color} key={gender}>
-                {gender.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      render: (gender) => {
+        let color = gender === 'Male' ? 'geekblue' : 'magenta';
+        return (
+          <Tag color={color} key={gender}>
+            {gender.toUpperCase()}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Job role',
-      key: 'job_role',
-      dataIndex: 'job_role',
+      key: 'role',
+      dataIndex: 'role',
       align: 'center',
-      render: (_, { tags }) => (
-        <>
-          {tags.map((tag) => {
-            return (
-              <Tag color={'green'} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      render: (tag) => {
+        return (
+          <Tag color={'green'} key={tag}>
+            {tag.toUpperCase()}
+          </Tag>
+        );
+      }
     },
     {
       title: 'Email',
@@ -131,10 +154,19 @@ const EmployeeData = () => {
               type="primary" 
               danger 
               className='del-button-table-dashboard'
-              onClick={() => handleDelete(record.id)}
+              onClick={() => showModal(record)}
             >
               <AiIcons.AiOutlineDelete />
             </Button>
+            <Modal
+              title="Delete"
+              closable={false}
+              open={openModal}
+              onOk={handleDelete}
+              onCancel={closeModal}
+            >
+              Are you sure want to delete the employee {record && `with id ${record.id}`}?
+            </Modal>
           </Tooltip>
           <Tooltip placement="topLeft" title="Update">
             <Button type="primary">
@@ -145,15 +177,6 @@ const EmployeeData = () => {
       ),
     }
   ];
-
-  const fetchData = async () => {
-    try{
-      const response = await axios.get(`${API_BASE_URL}/Data`);
-      setData(response.data);
-    } catch(error){
-      console.log(error);
-    }
-  };
 
   return (
     <div>
@@ -180,7 +203,8 @@ const EmployeeData = () => {
         />
       </Space>
       <Space wrap direction='horizontal'>
-      <Button 
+          <Button 
+            onClick={() => setVisible(true)}
             type="primary" 
             icon={<HiIcons.HiPlus
               color='white'
@@ -194,6 +218,77 @@ const EmployeeData = () => {
             style={{backgroundColor: 'blue'}}>
               Add Employee
           </Button>
+          <Modal
+            open={visible}
+            title="Add new record"
+            onCancel={() => {
+              closeModal();
+              form.resetFields();
+            }}
+            footer={[
+              <Button 
+                key="cancel"
+                onClick={() => {
+                  setVisible(false);
+                  form.resetFields();
+                }}
+              >
+                Cancel
+              </Button>,
+              <Button key="submit" type="primary" onClick={form.submit}>
+                Submit
+              </Button>,
+            ]}
+          >
+            <Form form={form} onFinish={handleSubmit}>
+              <Form.Item
+                name="name"
+                label="Name"
+                rules={[{required: true, message: "Please input your name"}]}>
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="gender"
+                label="Gender"
+                rules={[{required: true, message: "Please input your gender"}]}>
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="role"
+                label="Role"
+                rules={[{required: true, message: "Please input your role"}]}>
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{required: true, message: "Please input your email"}]}>
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="address"
+                label="Address"
+                rules={[{required: true, message: "Please input your address"}]}>
+                <TextArea
+                  showCount
+                  maxLength={100}
+                  style={{ height: 120, resize: 'none' }}
+                />
+              </Form.Item>
+            </Form>
+          </Modal>
+          <ToastContainer
+            position="top-center"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
       </Space>
       <Table 
         size='small'
@@ -202,14 +297,14 @@ const EmployeeData = () => {
         dataSource={data.map((item) => {
           return {
             id: item.id,
-            profile: item.profile,
             name: item.name,
             gender: item.gender,
+            role: item.role,
             email: item.email,
             address: item.address,
-            tags: item.tags
           }
         })} 
+        loading={isLoading}
         bordered
         pagination={{
           pageSize: 10,

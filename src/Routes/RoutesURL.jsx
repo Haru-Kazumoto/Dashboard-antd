@@ -7,7 +7,7 @@ import UserData from '../Pages/User-data'
 const RoutesURL = () => {
   return (
     <Routes>
-      <Route path='/' element={<DashboardData />} />
+      <Route path='*' element={<DashboardData />} />
       <Route path='/user-data' element={<UserData />} />
       <Route path='/employee-data' element={<EmployeeData />} />
     </Routes>

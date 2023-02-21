@@ -27,18 +27,20 @@ const Dashboard = () => {
                     <div className="logo" style={{color: 'white', textAlign: 'center'}}>
                         <img src="./logo192.png" alt="logo" />
                     </div>
-                        <Menu theme="dark" mode="inline" 
-                        defaultSelectedKeys={['4']}
-                        onClick={(item) => {
-                            navigate(item.key);
-                        }}
-                        items={SideNav.map((data) => {
-                            return {
-                                key: data.key,
-                                label: data.label,
-                                icon: data.icon
-                            };
-                        })}
+                        <Menu 
+                            theme="dark" 
+                            mode="inline" 
+                            defaultSelectedKeys={['4']}
+                            onClick={(item) => {
+                                navigate(item.key);
+                            }}
+                            items={SideNav.map((data) => {
+                                return {
+                                    key: data.key,
+                                    label: data.label,
+                                    icon: data.icon
+                                };
+                            })}
                         />
                 </Sider>
                 <Layout>
