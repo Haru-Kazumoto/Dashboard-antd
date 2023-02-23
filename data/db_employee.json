@@ -15,22 +15,6 @@
       "role": "backend",
       "email": "haru@gmail.com",
       "address": "Indonesia"
-    },
-    {
-      "name": "Kazumoto",
-      "gender": "male",
-      "role": "ui",
-      "email": "aasljdfh@gmail.com",
-      "address": "asldkjhfalksjdhfl",
-      "id": 3
-    },
-    {
-      "name": "dfasdfasd",
-      "gender": "fasdfasdfas",
-      "role": "dsafasdfasdf",
-      "email": "asdfasdfasdf",
-      "address": "asdfasdfasdf",
-      "id": 4
     }
   ]
 }

@@ -9,7 +9,7 @@ import axios from 'axios';
 
 const DashboardData = () => {
 
-  const API_BASE_URL = "http://localhost:3000";
+  const API_BASE_URL = "http://localhost:8890";
 
   const[data, setData] = React.useState([]);
   const[isOpen, setIsOpen] = React.useState(false);
@@ -21,9 +21,10 @@ const DashboardData = () => {
 
   const fetchData = async () => {
     try{
-      const response = await axios.get(`${API_BASE_URL}/data`);
+      const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`);
       setIsLoading(false);
       setData(response.data);  
+      console.log(response.data);
     } catch(error){
       message.error("Failed to get data, please check the server side.");
       console.log(error);
@@ -36,7 +37,8 @@ const DashboardData = () => {
       dataIndex: 'id',
       width: 50,
       key: 'id',
-      align: 'center'
+      align: 'center',
+      fixed: 'left'
     },
     {
       title: 'Name',
@@ -70,46 +72,37 @@ const DashboardData = () => {
       dataIndex: 'gender',
       key: 'gender',
       align: 'center',
-      render: (_, { gender }) => (
-        <>
-          {gender.map((gender) => {
-            let color = gender === 'Male' ? 'geekblue' : 'magenta';
-            return (
-              <Tag color={color} key={gender}>
-                {gender.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      render: (gender) => {
+        return (
+          <Tag color={'geekblue'} key={gender}>
+            {gender.toUpperCase()}
+          </Tag>
+        );
+      },
     },
     {
       title: 'Job role',
       key: 'role',
       dataIndex: 'role',
       align: 'center',
-      render: (_, { role }) => (
-        <>
-          {role.map((tag) => {
-            return (
-              <Tag color={'green'} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      ),
+      render: (tag) => {
+        return (
+          <Tag color={'green'} key={tag}>
+            {tag.toUpperCase()}
+          </Tag>
+        );
+      }
+    },
+    {
+      title: 'Number Employee',
+      dataIndex: 'numberEmployee',
+      key: 'numberEmployee',
+      align: 'center'
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      align: 'center'
-    },
-    {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
       align: 'center'
     },
   ];
@@ -202,12 +195,12 @@ const DashboardData = () => {
         columns={columns} 
         dataSource={data.map((item) => {
           return {
+            email: item.email,
+            gender: item.gender,
             id: item.id,
             name: item.name,
-            gender: item.gender,
+            numberEmployee: item.numberEmployee,
             role: item.role,
-            email: item.email,
-            address: item.address
           }
         })} 
         loading={isLoading}
@@ -216,7 +209,8 @@ const DashboardData = () => {
           position: ['bottomCenter']
         }}
         scroll={{
-          y: 350
+          y: 350,
+          x: 600
         }}
         />
     </div>

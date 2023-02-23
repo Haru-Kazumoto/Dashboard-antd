@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
 
 *{
   margin: 0;
   padding: 0;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: 'kanit', sans-serif;
 }
 
 /* ----HEADER---- */
@@ -84,6 +85,20 @@
 
 .del-button-table-dashboard{
   margin-right: 5px;
+}
+
+/* MODAL CONTENT EMPLOYEE DASHBOARD */
+
+.button-random-num{
+  margin-left: 10px;
+}
+
+.form-input{
+  padding: 10px;
+}
+
+.form-input-content{
+  padding: 5px;
 }
 
 /* ----SIDE---- */
