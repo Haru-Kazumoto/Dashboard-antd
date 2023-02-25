@@ -1,12 +1,7 @@
 import React from 'react'
 import DashboardCard from '../components/DashboardCard'
 import {Tag, Table, Tooltip, Button, Space, message, Modal, Form, notification} from 'antd';
-import {Input as InputAnt} from 'antd';
 import { ToastContainer, toast } from "react-toastify";
-import {FormLabel } from '@mui/joy';
-import {Input as InputMui} from '@mui/joy';
-import Select, { selectClasses } from '@mui/joy/Select';
-import Option from '@mui/joy/Option';
 import "react-toastify/dist/ReactToastify.css";
 import * as TiIcons from 'react-icons/ti';
 import * as TbIcons from 'react-icons/tb';
@@ -25,31 +20,31 @@ const EmployeeData = () => {
 
   const[data, setData] = React.useState([]);
   const[record, setRecord] = React.useState(null);
-  const[openModal, setOpenModal] = React.useState(false);
+  const[openDeleteModal, setDeleteOpenDeleteModal] = React.useState(false);
+  const[openEditModal, setEditOpenModal] = React.useState(false);
   const[visible, setVisible] = React.useState(false);
   const[isLoading, setIsLoading] = React.useState(true);
   const[form] = Form.useForm();
-  const [employeeNumber, setEmployeeNumber] = React.useState('');
 
-  const handleInput = (e) => {
-    const inputValue = e.target.value;
-    if (inputValue.length <= 3) {
-      setEmployeeNumber(inputValue);
-    }
-  };
+  // hooks for submit data
+  const [name, setName] = React.useState('');
+  const [gender, setGender] = React.useState('');
+  const [role, setRole] = React.useState('');
+  const [numberEmployee, setNumberEmployee] = React.useState('');
+  const [email, setEmail] = React.useState('');
 
-  const generateRandomNumber = () => {
+  const handleRandomNumClick = () => {
     const randomNum = Math.floor(Math.random() * 1000);
-    setEmployeeNumber(`${randomNum}`);
+    setNumberEmployee(`EM${randomNum}`);
   };
 
-  const showModal = (record) => {
+  const showDeleteModal = (record) => {
     setRecord(record);
-    setOpenModal(true);
+    setDeleteOpenDeleteModal(true);
   }
 
   const closeModal = () => {
-    setOpenModal(false);
+    setDeleteOpenDeleteModal(false);
   }
 
   const fetchData = async () => {
@@ -76,10 +71,19 @@ const EmployeeData = () => {
     }
   }
 
-  const handleSubmit = (values) => {
-    axios.post(`${API_BASE_URL}/api/v1/employee/create`, values)
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const employeeData = {
+      name,
+      gender,
+      role,
+      numberEmployee,
+      email,
+    };
+
+    axios.post('http://localhost:8890/api/v1/employee/create', employeeData)
       .then((response) => {
-        console.log(response);
         form.resetFields();
         setVisible(false);
         toast.success("New record has been added!", {
@@ -101,7 +105,7 @@ const EmployeeData = () => {
           description: "An error occurred while push data, check the server side."
         });
       });
-  }
+  };
 
   const columns = [
     {
@@ -176,14 +180,14 @@ const EmployeeData = () => {
               type="primary" 
               danger 
               className='del-button-table-dashboard'
-              onClick={() => showModal(record)}
+              onClick={() => showDeleteModal(record)}
             >
               <AiIcons.AiOutlineDelete />
             </Button>
             <Modal
               title="Delete"
               closable={false}
-              open={openModal}
+              open={openDeleteModal}
               onOk={handleDelete}
               onCancel={closeModal}
               maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.1 )' }}
@@ -259,86 +263,54 @@ const EmployeeData = () => {
               >
                 Cancel
               </Button>,
-              <Button key="submit" type="primary" onClick={form.submit}>
+              <Button key="submit" type="primary" >
                 Submit
               </Button>,
             ]}
           >
-            <Form form={form} onFinish={handleSubmit}>
-              <div className="form-input">
-                <div className="form-input-content">
-                  <FormLabel className="label-modal-input">Name</FormLabel>
-                  <InputMui 
-                    size="md" 
-                    type='text' 
-                    placeholder='Name' 
-                    id='name'
-                  />  
-                </div>
-                <div className="form-input-content">
-                  <FormLabel className="label-modal-input">Gender</FormLabel>
-                  <Select
-                    placeholder="Select Gender"
-                    indicator={<MdIcons.MdKeyboardArrowDown />}
-                    sx={{
-                      width: 240,
-                      [`& .${selectClasses.indicator}`]: {
-                        transition: '0.2s',
-                        [`&.${selectClasses.expanded}`]: {
-                          transform: 'rotate(-180deg)'
-                        },
-                      }
-                    }}
-                  >
-                    <Option value="male">MALE</Option>
-                    <Option value="female">FEMALE</Option>
-                  </Select>
-                </div>
-                <div className="form-input-content">
-                  <FormLabel className="label-modal-input">Role</FormLabel>
-                  <Select
-                    placeholder="Select Role"
-                    indicator={<MdIcons.MdKeyboardArrowDown />}
-                    sx={{
-                      width: 240,
-                      [`& .${selectClasses.indicator}`]: {
-                        transition: '0.2s',
-                        [`&.${selectClasses.expanded}`]: {
-                          transform: 'rotate(-180deg)'
-                        },
-                      }
-                    }}
-                  >
-                    <Option value="backend">BACKEND</Option>
-                    <Option value="frontend">FRONTEND</Option>
-                    <Option value="ui">UI</Option>
-                    <Option value="tester">TESTER</Option>
-                  </Select>
-                </div>
-                <div className="form-input-content">
-                  <FormLabel className="label-modal-input">Number Employee</FormLabel>
-                  <InputAnt
-                    placeholder="***"
-                    prefix="EM"
-                    type="number"
-                    style={{
-                      width: '100px',
-                      height: '40px',
-                      borderColor: 'black',
-                      borderRadius: '7px'
-                    }}
-                    maxLength={3}
-                    value={employeeNumber}
-                    onInput={handleInput}
-                  />
-                  <Button onClick={generateRandomNumber} className='button-random-num'>Generate Number</Button>
-                </div>
-                <div className="form-input-content">
-                  <FormLabel className="label-modal-input">Email</FormLabel>
-                  <InputMui size="md" type='email' placeholder='Email'/>
-                </div>
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label>
+                  Name:
+                  <input type="text" value={name} onChange={(event) => setName(event.target.value)} />
+                </label>
               </div>
-            </Form>
+              <div>
+                <label>
+                  Gender:
+                  <select value={gender} onChange={(event) => setGender(event.target.value)}>
+                    <option value="">Select Gender</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                  </select>
+                </label>
+              </div>
+              <div>
+                <label>
+                  Job Role:
+                  <select value={role} onChange={(event) => setRole(event.target.value)}>
+                    <option value="">Select Job Role</option>
+                    <option value="BACKEND">BACKEND</option>
+                    <option value="FRONTEND">FRONTEND</option>
+                    <option value="UI">UI</option>
+                    <option value="TESTER">TESTER</option>
+                  </select>
+                </label>
+              </div>
+              <div>
+                <label>
+                  Number of Employees:
+                  <input type="text" value={numberEmployee} onChange={(event) => setNumberEmployee(event.target.value)}/>
+                  <button onClick={handleRandomNumClick}>Generate</button>
+                </label>
+              </div>
+              <div>
+                <label>
+                  Email:
+                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+                </label>
+              </div>
+            </form>
           </Modal>
           <ToastContainer
             position="top-center"
