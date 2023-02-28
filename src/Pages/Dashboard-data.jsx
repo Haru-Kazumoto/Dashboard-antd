@@ -11,6 +11,10 @@ const DashboardData = () => {
 
   const API_BASE_URL = "http://localhost:8890";
 
+  const headers = {
+    'X-Client-Port': '3001'
+  };
+
   const[data, setData] = React.useState([]);
   const[isOpen, setIsOpen] = React.useState(false);
   const[isLoading, setIsLoading] = React.useState(true);
@@ -21,7 +25,7 @@ const DashboardData = () => {
 
   const fetchData = async () => {
     try{
-      const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`);
+      const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`, {headers});
       setIsLoading(false);
       setData(response.data);  
       console.log(response.data);

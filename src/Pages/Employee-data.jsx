@@ -1,19 +1,20 @@
 import React from 'react'
-import DashboardCard from '../components/DashboardCard'
-import {Tag, Table, Tooltip, Button, Space, message, Modal, Form, notification} from 'antd';
-import { ToastContainer, toast } from "react-toastify";
+import {Tag, Table, Tooltip, Button, message, Form, notification, Modal} from 'antd';
+import { toast } from "react-toastify";
+import FormAddEmployee from '../form/Form-Add-Employee';
 import "react-toastify/dist/ReactToastify.css";
-import * as TiIcons from 'react-icons/ti';
-import * as TbIcons from 'react-icons/tb';
-import * as MdIcons from 'react-icons/md';
-import * as GrIcons from 'react-icons/gr';
+import ProfileCard from '../components/Profile-card/Profile-Card';
 import * as AiIcons from 'react-icons/ai';
-import * as HiIcons from 'react-icons/hi';
 import axios from 'axios';
 
 const EmployeeData = () => {
 
   const API_BASE_URL = "http://localhost:8890";
+
+  const headers ={
+    'X-Client-Port': '3001'
+  }
+
   React.useEffect(() => {
     fetchData();
   }, []);
@@ -47,17 +48,17 @@ const EmployeeData = () => {
     setDeleteOpenDeleteModal(false);
   }
 
+  // HANDLE DATA CRUD //
+
   const fetchData = async () => {
     try{
-      const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`)
+      const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`, {headers})
       setIsLoading(false);
       setData(response.data);
     } catch(error){
       console.log(error);
     }
   };
-
-  // HANDLE DATA CRUD //
 
   const handleDelete = async () => {
     try{
@@ -207,124 +208,26 @@ const EmployeeData = () => {
 
   return (
     <div>
-      <Space direction='horizontal'>
-        <DashboardCard 
-          icon={<TiIcons.TiFlowSwitch size={30}/>}
-          title={'Backend'}
-          value={10}
-        />
-        <DashboardCard 
-          icon={<TbIcons.TbHeartRateMonitor size={30}/>}
-          title={'Frontend'}
-          value={10}
-        />
-        <DashboardCard 
-          icon={<MdIcons.MdOutlineDesignServices size={30}/>}
-          title={'UI/UX'}
-          value={10}
-        />
-        <DashboardCard 
-          icon={<GrIcons.GrDocumentTest size={30}/>}
-          title={'Tester'}
-          value={10}
-        />
-      </Space>
-      <Space wrap direction='horizontal'>
-          <Button 
-            onClick={() => setVisible(true)}
-            type="primary" 
-            icon={<HiIcons.HiPlus
-              color='white'
-              style={
-                {
-                  marginRight: 10,
-                  alignItems: 'center',
-                }
-            }/>} 
-            size={'large'} 
-            style={{backgroundColor: 'blue'}}>
-              Add Employee
-          </Button>
-          <Modal
-            closable={false}
-            open={visible}
-            title="Add new record"
-            onCancel={() => {
-              closeModal();
-              form.resetFields();
-            }}
-            footer={[
-              <Button 
-                key="cancel"
-                onClick={() => {
-                  setVisible(false);
-                  form.resetFields();
-                }}
-              >
-                Cancel
-              </Button>,
-              <Button key="submit" type="primary" >
-                Submit
-              </Button>,
-            ]}
-          >
-            <form onSubmit={handleSubmit}>
-              <div>
-                <label>
-                  Name:
-                  <input type="text" value={name} onChange={(event) => setName(event.target.value)} />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Gender:
-                  <select value={gender} onChange={(event) => setGender(event.target.value)}>
-                    <option value="">Select Gender</option>
-                    <option value="MALE">Male</option>
-                    <option value="FEMALE">Female</option>
-                  </select>
-                </label>
-              </div>
-              <div>
-                <label>
-                  Job Role:
-                  <select value={role} onChange={(event) => setRole(event.target.value)}>
-                    <option value="">Select Job Role</option>
-                    <option value="BACKEND">BACKEND</option>
-                    <option value="FRONTEND">FRONTEND</option>
-                    <option value="UI">UI</option>
-                    <option value="TESTER">TESTER</option>
-                  </select>
-                </label>
-              </div>
-              <div>
-                <label>
-                  Number of Employees:
-                  <input type="text" value={numberEmployee} onChange={(event) => setNumberEmployee(event.target.value)}/>
-                  <button onClick={handleRandomNumClick}>Generate</button>
-                </label>
-              </div>
-              <div>
-                <label>
-                  Email:
-                  <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} />
-                </label>
-              </div>
-            </form>
-          </Modal>
-          <ToastContainer
-            position="top-center"
-            autoClose={2000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
-      </Space>
+      <ProfileCard />
+      <FormAddEmployee 
+        onSetVisible={setVisible}
+        onVisible={visible}
+        onCloseModal={closeModal}
+        onForm={form}
+        onHandleSubmit={handleSubmit}
+        propName={name}
+        propGender={gender}
+        propRole={role}
+        propNumberEmployee={numberEmployee}
+        propEmail={email}
+        propSetName={setName}
+        propSetGender={setGender}
+        propSetRole={setRole}
+        propSetNumberEmployee={setNumberEmployee}
+        propSetEmail={setEmail}
+        propHandleRandomClick={handleRandomNumClick}
+        propOnClick={handleSubmit}
+      />
       <Table 
         size='small'
         className='table-content'
