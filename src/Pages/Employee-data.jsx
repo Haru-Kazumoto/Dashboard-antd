@@ -1,5 +1,6 @@
 import React from 'react'
 import {Tag, Table, Tooltip, Button, message, Form, notification, Modal} from 'antd';
+// import { JobRoleContext } from '../components/Profile-card/JobRoleContext';
 import { toast } from "react-toastify";
 import FormAddEmployee from '../form/Form-Add-Employee';
 import "react-toastify/dist/ReactToastify.css";
@@ -11,18 +12,17 @@ const EmployeeData = () => {
 
   const API_BASE_URL = "http://localhost:8890";
 
-  const headers ={
-    'X-Client-Port': '3001'
-  }
-
-  React.useEffect(() => {
-    fetchData();
+  const headers = React.useMemo(() => {
+    return {
+      'X-Client-Port': '3001 | path: /employee-data'
+    };
   }, []);
+
+
 
   const[data, setData] = React.useState([]);
   const[record, setRecord] = React.useState(null);
   const[openDeleteModal, setDeleteOpenDeleteModal] = React.useState(false);
-  const[openEditModal, setEditOpenModal] = React.useState(false);
   const[visible, setVisible] = React.useState(false);
   const[isLoading, setIsLoading] = React.useState(true);
   const[form] = Form.useForm();
@@ -34,57 +34,24 @@ const EmployeeData = () => {
   const [numberEmployee, setNumberEmployee] = React.useState('');
   const [email, setEmail] = React.useState('');
 
+  const [jobRole, setJobRole] = React.useState({});
+
   const handleRandomNumClick = () => {
     const randomNum = Math.floor(Math.random() * 1000);
     setNumberEmployee(`EM${randomNum}`);
   };
 
-  const showDeleteModal = (record) => {
-    setRecord(record);
-    setDeleteOpenDeleteModal(true);
-  }
-
-  const closeModal = () => {
-    setDeleteOpenDeleteModal(false);
-  }
-
-  // HANDLE DATA CRUD //
-
-  const fetchData = async () => {
-    try{
-      const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`, {headers})
-      setIsLoading(false);
-      setData(response.data);
-    } catch(error){
-      console.log(error);
-    }
-  };
-
-  const handleDelete = async () => {
-    try{
-      await axios.delete(`${API_BASE_URL}/api/v1/employee/delete/${record.id}`);
-      message.success("Record has deleted.");
-      closeModal();
-      fetchData();
-    } catch(error) {
-      console.error(error);
-      message.error("Record failed to be deleted");
-    }
-  }
-
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const employeeData = {
-      name,
-      gender,
-      role,
-      numberEmployee,
-      email,
-    };
-
-    axios.post('http://localhost:8890/api/v1/employee/create', employeeData)
-      .then((response) => {
+    axios.post('http://localhost:8890/api/v1/employee/create', {
+      name: name,
+      gender: gender,
+      role: role,
+      numberEmployee: numberEmployee,
+      email: email
+    })
+      .then((response) => {   
         form.resetFields();
         setVisible(false);
         toast.success("New record has been added!", {
@@ -97,7 +64,8 @@ const EmployeeData = () => {
           progress: undefined,
           theme: "light",
           });
-          fetchData();
+        setJobRole(response.data);
+        fetchData();
       })
       .catch((error) => {
         console.log(error);
@@ -107,6 +75,44 @@ const EmployeeData = () => {
         });
       });
   };
+
+
+  const showDeleteModal = (record) => {
+    setRecord(record);
+    setDeleteOpenDeleteModal(true);
+  }
+
+  const closeModal = () => {
+    setDeleteOpenDeleteModal(false);
+  }
+
+  // HANDLE DATA CRUD //
+  const fetchData = React.useCallback(async () => {
+    try{
+      const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`, { headers });
+      setIsLoading(false);
+      console.log(response);
+      setData(response.data);
+    } catch(error){
+      console.log(error);
+    }
+  },[headers]);
+
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleDelete = async () => {
+    try{
+      await axios.delete(`${API_BASE_URL}/api/v1/employee/delete/${record.id}`);
+      message.success("Record has deleted.");
+      closeModal();
+      fetchData();
+    } catch(error) {
+      console.error(error);
+      message.error("Record failed to be deleted");
+    }
+  }
 
   const columns = [
     {
@@ -200,15 +206,29 @@ const EmployeeData = () => {
             <Button type="primary">
               <AiIcons.AiOutlineEdit />
             </Button>
+            
           </Tooltip>
         </>
       ),
     }
   ];
 
+  //State for profile card
+  React.useEffect(() => {
+    axios.get(`${API_BASE_URL}/api/v1/employee/count-roles`)
+      .then((response) => {
+        setJobRole(response.data);
+      })
+      .catch((error) => {
+        console.error(error.message);
+      })
+  }, []);
+
   return (
     <div>
-      <ProfileCard />
+      {/* <JobRoleContext.Provider value={jobRole}> */}
+        <ProfileCard jobRole={jobRole}/>
+      {/* </JobRoleContext.Provider> */}
       <FormAddEmployee 
         onSetVisible={setVisible}
         onVisible={visible}

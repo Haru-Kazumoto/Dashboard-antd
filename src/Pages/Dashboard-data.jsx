@@ -11,19 +11,17 @@ const DashboardData = () => {
 
   const API_BASE_URL = "http://localhost:8890";
 
-  const headers = {
-    'X-Client-Port': '3001'
-  };
+  const headers = React.useMemo(() => {
+    return {
+      'X-Client-Port': '3001 | path: /dashboard-data'
+    };
+  }, []);
 
   const[data, setData] = React.useState([]);
   const[isOpen, setIsOpen] = React.useState(false);
   const[isLoading, setIsLoading] = React.useState(true);
 
-  React.useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
     try{
       const response = await axios.get(`${API_BASE_URL}/api/v1/employee/get-all`, {headers});
       setIsLoading(false);
@@ -33,7 +31,11 @@ const DashboardData = () => {
       message.error("Failed to get data, please check the server side.");
       console.log(error);
     }
-  };
+  },[headers]);
+
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const columns = [
     {

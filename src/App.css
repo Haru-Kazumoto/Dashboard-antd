@@ -86,10 +86,53 @@
 .del-button-table-dashboard{
   margin-right: 5px;
 }
-/* 
-.input-form-add input{
-  width: 30px;
-} */
+
+.input-form-add{
+  height: 35px;
+  width: 300px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin: 5px;
+  padding: 0 5px 0;
+}
+
+.input-form-add:focus {
+  border: 1px solid blue;
+  outline: none; /* remove default focus outline */
+}
+
+.input-button-generate{
+  height: 35px;
+  width: 90px;
+  border-radius: 10px;
+  margin: 5px;
+  background-color: rgb(102, 102, 255);
+  color: white;
+  border-style: hidden;
+}
+
+.input-button-generate:hover{
+  transition: 0.5;
+  background-color: rgba(102, 102, 255, 0.783);
+}
+
+.input-form-add-number-employee{
+  height: 35px;
+  width: 200px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin: 5px;
+  padding: 0 5px 0;
+}
+
+.input-form-add-number-employee:focus{
+  border: 1px solid blue;
+  outline: none; /* remove default focus outline */
+}
+
+
 
 /* MODAL CONTENT EMPLOYEE DASHBOARD */
 
